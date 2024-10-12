@@ -9,6 +9,7 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns"></script>
     <script src="https://momentjs.com/downloads/moment.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script>
     <script src="script.js" defer></script>
     <style>
         .input-column {
@@ -24,6 +25,9 @@
             width: 100%;
             height: 100%;
         }
+        .failed-tests-list {
+            margin-top: 20px;
+        }
     </style>
 </head>
 <body>
@@ -31,7 +35,9 @@
     <div class="row">
         <div class="col-md-3 input-column">
             <div class="mb-3">
-                <input type="text" id="test_name" class="form-control" placeholder="Test Name">
+                <input type="date" id="start_date" class="form-control" placeholder="Start Date">
+                <input type="date" id="end_date" class="form-control mt-2" placeholder="End Date">
+                <input type="text" id="test_name" class="form-control mt-2" placeholder="Test Name">
                 <input type="text" id="test_outcome" class="form-control mt-2" placeholder="Test Outcome">
                 <input type="text" id="test_execution_date" class="form-control mt-2" placeholder="Test Execution Date">
                 <input type="text" id="test_environment" class="form-control mt-2" placeholder="Test Environment">
@@ -40,10 +46,39 @@
                 <input type="text" id="test_case_id" class="form-control mt-2" placeholder="Test Case ID">
                 <button id="fetchData" class="btn btn-primary mt-2">Fetch Data</button>
             </div>
+            <div class="failed-tests-list">
+                <div class="card">
+                    <div class="card-header">
+                        Top 10 Most Failed Test Cases
+                    </div>
+                    <ul class="list-group list-group-flush" id="failedTestsList">
+                        <!-- List items will be appended here by JavaScript -->
+                    </ul>
+                </div>
+            </div>
         </div>
-        <div class="col-md-9 chart-container">
-            <div class="chart-column">
-                <canvas id="testResultsChart"></canvas>
+        <div class="col-md-9">
+            <ul class="nav nav-tabs" id="chartTypeTabs" role="tablist">
+                <li class="nav-item">
+                    <a class="nav-link active" id="bar-chart-tab" data-toggle="tab" href="#bar-chart" role="tab" aria-controls="bar-chart" aria-selected="true">Bar Chart</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" id="line-chart-tab" data-toggle="tab" href="#line-chart" role="tab" aria-controls="line-chart" aria-selected="false">Line Chart</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" id="pie-chart-tab" data-toggle="tab" href="#pie-chart" role="tab" aria-controls="pie-chart" aria-selected="false">Pie Chart</a>
+                </li>
+            </ul>
+            <div class="tab-content chart-container">
+                <div class="tab-pane fade show active chart-column" id="bar-chart" role="tabpanel" aria-labelledby="bar-chart-tab">
+                    <canvas id="barChart"></canvas>
+                </div>
+                <div class="tab-pane fade chart-column" id="line-chart" role="tabpanel" aria-labelledby="line-chart-tab">
+                    <canvas id="lineChart"></canvas>
+                </div>
+                <div class="tab-pane fade chart-column" id="pie-chart" role="tabpanel" aria-labelledby="pie-chart-tab">
+                    <canvas id="pieChart"></canvas>
+                </div>
             </div>
         </div>
     </div>
