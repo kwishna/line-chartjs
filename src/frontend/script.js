@@ -147,10 +147,13 @@ $(document).ready(function () {
             options: getChartOptions(maxYValue)
         });
 
+        const totalPassed = Object.values(passedCounts).reduce((a, b) => a + b, 0);
+        const totalFailed = Object.values(failedCounts).reduce((a, b) => a + b, 0);
+
         const pieData = {
             labels: ['Passed', 'Failed'],
             datasets: [{
-                data: [Object.values(passedCounts).reduce((a, b) => a + b, 0), Object.values(failedCounts).reduce((a, b) => a + b, 0)],
+                data: [totalPassed, totalFailed],
                 backgroundColor: ['rgba(0, 128, 0, 0.6)', 'rgba(255, 0, 0, 0.6)'],
                 borderColor: ['rgba(0, 128, 0, 1)', 'rgba(255, 0, 0, 1)']
             }]
@@ -160,8 +163,23 @@ $(document).ready(function () {
             type: 'pie',
             data: pieData,
             options: {
-                responsive: true
-            }
+                responsive: true,
+                plugins: {
+                    // Plugin to display data labels on the chart
+                    datalabels: {
+                        color: '#fff',
+                        formatter: function (value, context) {
+                            const total = context.chart.data.datasets[0].data.reduce((a, b) => a + b, 0);
+                            const percentage = (value / total * 100).toFixed(2);
+                            return value + ' (' + percentage + '%)';
+                        },
+                        font: {
+                            weight: 'bold'
+                        }
+                    }
+                }
+            },
+            plugins: [ChartDataLabels] // Enable the data labels plugin
         });
     }
 
