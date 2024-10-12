@@ -1,6 +1,17 @@
+<p align="center">
+   A simple and easy-to-use library for creating a dashboard with Chart.js and jQuery. This library helps you visualize test result data from your database in a clean and interactive dashboard.
+</p>
+
+<div align="center">
+
+[![NPM version](https://badge.fury.io/js/@kwishna%2Flinechartjs.svg)](https://www.npmjs.com/package/@kwishna/linechartjs)
+[![Monthly Downloads](https://img.shields.io/npm/dw/%40kwishna%2Flinechartjs)](https://www.npmjs.com/package/@kwishna/linechartjs)
+
+</div>
+
 # Line Chart
 
-A powerful and easy-to-use library for creating an Express dashboard with Chart.js and jQuery. This library helps you visualize data from your database in a clean and interactive dashboard.
+
 
 ## Features
 
@@ -19,7 +30,7 @@ A powerful and easy-to-use library for creating an Express dashboard with Chart.
 Install the library using npm:
 
 ```sh
-    npm install linechartjs
+    npm install @kwishna/linechartjs
 ```
 
 ## Usage
