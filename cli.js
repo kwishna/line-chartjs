@@ -21,15 +21,17 @@ const argv = yargs(hideBin(process.argv))
 const dbDirectory = argv._[0];
 const port = argv.port;
 
-console.log(`Your have mentioned your data directory: ${dbDirectory}.`);
+console.log(`Your have mentioned your data directory: ${path.resolve(dbDirectory)}.`);
 process.env.DATA_FOLDER = dbDirectory;
 process.env.EXPRESS_PORT = port;
 
 // Start the main application with the provided directory and port
 const indexPath = path.join(__dirname, 'src/index.js');
-const command = `node ${indexPath} "${dbDirectory}"`;
+const command = `node ${indexPath}`;
 
 exec(command, (error, stdout, stderr) => {
+    console.log(`Opening server at: http://localhost:${port}`);
+    
     if (error) {
         console.error(`Error: ${error.message}`);
         return;
@@ -40,3 +42,13 @@ exec(command, (error, stdout, stderr) => {
     }
     console.log(stdout);
 });
+
+try {
+    (async () => {
+        const open = await import('open');
+        open.default(`http://localhost:${port}`);
+    })();
+}
+catch(e) {
+    console.error(`Failed to open http://localhost:${port} in browser. Please try manually. ${e.message}`);   
+}
