@@ -3,6 +3,7 @@ $(document).ready(function () {
     let lineChartInstance = null;
     let pieChartInstance = null;
     let apiUrl = '';
+    let defaultDateRangeSet = false;
 
     // Fetch configuration from the backend
     $.ajax({
@@ -51,8 +52,14 @@ $(document).ready(function () {
                     return;
                 }
 
-                updateCharts(data);
-                updateFailedTestsList(data);
+                if (!defaultDateRangeSet) {
+                    setDefaultDateRange(data);
+                    defaultDateRangeSet = true;
+                }
+
+                const filteredData = filterDataByDateRange(data, filters.start_date, filters.end_date);
+                updateCharts(filteredData);
+                updateFailedTestsList(filteredData);
             },
             error: function (err) {
                 console.error('Error fetching data for chart:', err);
@@ -63,6 +70,8 @@ $(document).ready(function () {
     // Function to get filters from input fields
     function getFilters() {
         const filters = {
+            start_date: $('#start_date').val(),
+            end_date: $('#end_date').val(),
             test_name: $('#test_name').val(),
             test_outcome: $('#test_outcome').val(),
             test_execution_date: $('#test_execution_date').val(),
@@ -250,6 +259,33 @@ $(document).ready(function () {
                 $failedTestsList.append(`<li class="list-group-item">${test.testId} - ${test.count}</li>`);
             });
         }
+    }
+
+    // Function to set default date range
+    function setDefaultDateRange(data) {
+        const dates = data.map(item => item.test_execution_date);
+        const minDate = new Date(Math.min(...dates.map(date => new Date(date))));
+        const maxDate = new Date(Math.max(...dates.map(date => new Date(date))));
+
+        const formatDate = date => date.toISOString().split('T')[0];
+
+        $('#start_date').val(formatDate(minDate));
+        $('#end_date').val(formatDate(maxDate));
+    }
+
+    // Function to filter data by date range
+    function filterDataByDateRange(data, startDate, endDate) {
+        if (!startDate && !endDate) {
+            return data;
+        }
+
+        const start = startDate ? new Date(startDate) : new Date(Math.min(...data.map(item => new Date(item.test_execution_date))));
+        const end = endDate ? new Date(endDate) : new Date(Math.max(...data.map(item => new Date(item.test_execution_date))));
+
+        return data.filter(item => {
+            const date = new Date(item.test_execution_date);
+            return date >= start && date <= end;
+        });
     }
 
     // Function to show alert for invalid data
