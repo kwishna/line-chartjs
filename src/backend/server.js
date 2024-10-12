@@ -18,7 +18,7 @@ const createServer = () => {
     app.use(express.static(join(__dirname, '../frontend')));
 
     // Serve the index.html file for the root.
-    app.get('/', (req, res) => {
+    app.all('/', (req, res) => {
         res.sendFile(join(__dirname, '../frontend/index.html'));
     });
 
@@ -93,3 +93,4 @@ const createServer = () => {
 }
 
 module.exports = createServer;
+createServer()

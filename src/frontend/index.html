@@ -9,6 +9,7 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns"></script>
     <script src="https://momentjs.com/downloads/moment.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script>
     <script src="script.js" defer></script>
     <style>
         .input-column {
@@ -41,9 +42,28 @@
                 <button id="fetchData" class="btn btn-primary mt-2">Fetch Data</button>
             </div>
         </div>
-        <div class="col-md-9 chart-container">
-            <div class="chart-column">
-                <canvas id="testResultsChart"></canvas>
+        <div class="col-md-9">
+            <ul class="nav nav-tabs" id="chartTypeTabs" role="tablist">
+                <li class="nav-item">
+                    <a class="nav-link active" id="bar-chart-tab" data-toggle="tab" href="#bar-chart" role="tab" aria-controls="bar-chart" aria-selected="true">Bar Chart</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" id="line-chart-tab" data-toggle="tab" href="#line-chart" role="tab" aria-controls="line-chart" aria-selected="false">Line Chart</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" id="pie-chart-tab" data-toggle="tab" href="#pie-chart" role="tab" aria-controls="pie-chart" aria-selected="false">Pie Chart</a>
+                </li>
+            </ul>
+            <div class="tab-content chart-container">
+                <div class="tab-pane fade show active chart-column" id="bar-chart" role="tabpanel" aria-labelledby="bar-chart-tab">
+                    <canvas id="barChart"></canvas>
+                </div>
+                <div class="tab-pane fade chart-column" id="line-chart" role="tabpanel" aria-labelledby="line-chart-tab">
+                    <canvas id="lineChart"></canvas>
+                </div>
+                <div class="tab-pane fade chart-column" id="pie-chart" role="tabpanel" aria-labelledby="pie-chart-tab">
+                    <canvas id="pieChart"></canvas>
+                </div>
             </div>
         </div>
     </div>
