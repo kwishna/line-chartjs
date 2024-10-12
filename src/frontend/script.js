@@ -52,6 +52,7 @@ $(document).ready(function () {
                 }
 
                 updateCharts(data);
+                updateFailedTestsList(data);
             },
             error: function (err) {
                 console.error('Error fetching data for chart:', err);
@@ -213,6 +214,42 @@ $(document).ready(function () {
             }
         });
         return counts;
+    }
+
+    // Function to update the failed tests list
+    function updateFailedTestsList(data) {
+        const failedTests = data.filter(item => item.test_outcome === 'failed');
+        const failedTestsCount = {};
+
+        failedTests.forEach(test => {
+            const testId = test.test_case_id;
+            if (!failedTestsCount[testId]) {
+                failedTestsCount[testId] = {
+                    count: 0,
+                    name: test.test_name
+                };
+            }
+            failedTestsCount[testId].count++;
+        });
+
+        const sortedFailedTests = Object.keys(failedTestsCount)
+            .map(testId => ({
+                testId,
+                count: failedTestsCount[testId].count
+            }))
+            .sort((a, b) => b.count - a.count)
+            .slice(0, 10);
+
+        const $failedTestsList = $('#failedTestsList');
+        $failedTestsList.empty();
+
+        if (sortedFailedTests.length === 0) {
+            $failedTestsList.append('<li class="list-group-item">No failed test cases found</li>');
+        } else {
+            sortedFailedTests.forEach(test => {
+                $failedTestsList.append(`<li class="list-group-item">${test.testId} - ${test.count}</li>`);
+            });
+        }
     }
 
     // Function to show alert for invalid data

@@ -25,6 +25,9 @@
             width: 100%;
             height: 100%;
         }
+        .failed-tests-list {
+            margin-top: 20px;
+        }
     </style>
 </head>
 <body>
@@ -40,6 +43,16 @@
                 <input type="text" id="test_category" class="form-control mt-2" placeholder="Test Category">
                 <input type="text" id="test_case_id" class="form-control mt-2" placeholder="Test Case ID">
                 <button id="fetchData" class="btn btn-primary mt-2">Fetch Data</button>
+            </div>
+            <div class="failed-tests-list">
+                <div class="card">
+                    <div class="card-header">
+                        Top 10 Most Failed Test Cases
+                    </div>
+                    <ul class="list-group list-group-flush" id="failedTestsList">
+                        <!-- List items will be appended here by JavaScript -->
+                    </ul>
+                </div>
             </div>
         </div>
         <div class="col-md-9">
