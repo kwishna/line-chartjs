@@ -9,10 +9,6 @@
 
 </div>
 
-# Line Chart
-
-
-
 ## Features
 
 - **Easy Setup**: Quickly set up a dashboard with minimal configuration.
