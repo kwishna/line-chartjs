@@ -1,5 +1,5 @@
 {
-  "name": "line-chartjs",
+  "name": "@kwishna/linechartjs",
   "version": "1.0.0",
   "description": "An Express and jQuery-based dashboard for test results",
   "main": "index.js",
@@ -22,13 +22,13 @@
     "access": "public"
   },
   "bugs": {
-    "url": "https://github.com/kwishna/line-chartjs/issues"
+    "url": "https://github.com/kwishna/linechartjs/issues"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/kwishna/line-chartjs.git"
+    "url": "git+https://github.com/kwishna/linechartjs.git"
   },
-  "homepage": "https://github.com/kwishna/line-chartjs#readme",
+  "homepage": "https://github.com/kwishna/linechartjs#readme",
   "prettier": {
     "bracketSpacing": false,
     "printWidth": 100,
