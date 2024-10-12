@@ -19,14 +19,14 @@ A powerful and easy-to-use library for creating an Express dashboard with Chart.
 Install the library using npm:
 
 ```sh
-    npm install line-chartjs
+    npm install linechartjs
 ```
 
 ## Usage
 To use the library, run the following command, providing the path to your database directory:
 
 ```sh
-npx line-chartjs "./path/to/your/data" --port 3001
+npx linechartjs "./path/to/your/data" --port 3001
 ```
 
 ## Configuration

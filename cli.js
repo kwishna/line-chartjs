@@ -7,7 +7,7 @@ const { hideBin } = require('yargs/helpers');
 
 // Parse command-line arguments using yargs
 const argv = yargs(hideBin(process.argv))
-    .usage('Usage: npx line-chartjs <db-directory> [options]')
+    .usage('Usage: npx linechartjs <db-directory> [options]')
     .demandCommand(1, 'You need to specify the database directory')
     .option('port', {
         alias: 'p',

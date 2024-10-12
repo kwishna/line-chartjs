@@ -4,7 +4,7 @@
   "description": "An Express and jQuery-based dashboard for test results",
   "main": "index.js",
   "bin": {
-    "line-chartjs": "cli.js"
+    "linechartjs": "cli.js"
   },
   "scripts": {
     "start": "node src/index.js",
@@ -18,7 +18,7 @@
     "sequelize"
   ],
   "publishConfig": {
-    "registry": "https://npm.pkg.github.com",
+    "registry": "https://registry.npmjs.org/",
     "access": "public"
   },
   "bugs": {
@@ -28,7 +28,7 @@
     "type": "git",
     "url": "git+https://github.com/kwishna/line-chartjs.git"
   },
-  "homepage": "hhttps://github.com/kwishna/line-chartjs#readme",
+  "homepage": "https://github.com/kwishna/line-chartjs#readme",
   "prettier": {
     "bracketSpacing": false,
     "printWidth": 100,
