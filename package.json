@@ -1,0 +1,59 @@
+{
+  "name": "line-chartjs",
+  "version": "1.0.0",
+  "description": "An Express and jQuery-based dashboard for test results",
+  "main": "index.js",
+  "bin": {
+    "line-chartjs": "cli.js"
+  },
+  "scripts": {
+    "start": "node src/index.js",
+    "debug": "nodemon src/index.js"
+  },
+  "keywords": [
+    "express",
+    "dashboard",
+    "jquery",
+    "sqlite3",
+    "sequelize"
+  ],
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com",
+    "access": "public"
+  },
+  "bugs": {
+    "url": "https://github.com/kwishna/line-chartjs/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/kwishna/line-chartjs.git"
+  },
+  "homepage": "hhttps://github.com/kwishna/line-chartjs#readme",
+  "prettier": {
+    "bracketSpacing": false,
+    "printWidth": 100,
+    "singleQuote": true
+  },
+  "engines": {
+    "node": "^14.17.0 || ^16.13.0 || >=18.0.0",
+    "npm": ">=8"
+  },
+  "author": {
+    "name": "Krishna Kumar Singh",
+    "email": "kwishna@gmail.com"
+  },
+  "contributors": [],
+  "license": "Apache-2.0",
+  "dependencies": {
+    "body-parser": "^1.19.0",
+    "cors": "^2.8.5",
+    "express": "^4.17.1",
+    "sequelize": "^6.37.4",
+    "sqlite3": "^5.1.7",
+    "yargs": "^17.7.2"
+  },
+  "devDependencies": {
+    "dotenv": "^16.4.5",
+    "nodemon": "^3.1.7"
+  }
+}
