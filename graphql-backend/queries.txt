@@ -1,0 +1,38 @@
+# Fetch all test results
+query {
+  testResults {
+    test_name
+    test_outcome
+    test_execution_date
+    test_environment
+    error_message
+    test_category
+    test_case_id
+  }
+}
+
+# Fetch a specific test result by ID
+query {
+  testResult(test_case_id: "123") {
+    test_name
+    test_outcome
+    test_execution_date
+    test_environment
+    error_message
+    test_category
+    test_case_id
+  }
+}
+
+# Filter test results
+query {
+  filterTestResults(test_outcome: "passed", test_environment: "staging") {
+    test_name
+    test_outcome
+    test_execution_date
+    test_environment
+    error_message
+    test_category
+    test_case_id
+  }
+}
