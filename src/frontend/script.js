@@ -40,8 +40,7 @@ $(document).ready(function () {
         }
 
         const filters = getFilters();
-        // console.log(`${JSON.stringify(filters, null, 2)}`);
-
+        // console.log(`filters: ${JSON.stringify(filters, null, 2)}`);
 
         $.ajax({
             url: apiUrl,
@@ -60,10 +59,6 @@ $(document).ready(function () {
                 }
 
                 const filteredData = filterDataByDateRange(data, filters.start_date, filters.end_date);
-
-                // console.log(`start: ${filters.start_date}`);
-                // console.log(`end: ${filters.end_date}`);
-                // console.log(JSON.stringify(filteredData, null, 2));
 
                 updateCharts(filteredData);
                 updateFailedTestsList(filteredData);
@@ -101,6 +96,7 @@ $(document).ready(function () {
     // Function to update charts based on data
     function updateCharts(data) {
         const dates = getUniqueSortedDates(data);
+
         const passedCounts = getCountsByOutcomeAndDate(data, 'passed');
         const failedCounts = getCountsByOutcomeAndDate(data, 'failed');
         const othersCounts = getCountsByOutcomeAndDate(data, 'others'); // Add counts for "others"
@@ -108,6 +104,7 @@ $(document).ready(function () {
         const maxPassedCount = Math.max(...Object.values(passedCounts));
         const maxFailedCount = Math.max(...Object.values(failedCounts));
         const maxOthersCount = Math.max(...Object.values(othersCounts));
+
         const maxYValue = Math.max(maxPassedCount, maxFailedCount, maxOthersCount); // Adjust maxYValue
 
         const chartData = {
@@ -212,9 +209,9 @@ $(document).ready(function () {
                     },
                     time: {
                         unit: 'day',
-                        tooltipFormat: 'DD/MM/YYYY',
+                        tooltipFormat: 'YYYY-MM-DD',
                         displayFormats: {
-                            day: 'DD/MM/YYYY'
+                            day: 'YYYY-MM-DD'
                         }
                     }
                 },
@@ -239,32 +236,19 @@ $(document).ready(function () {
         };
     }
 
-    // Function to get unique sorted dates from data
-    // function getUniqueSortedDates(data) {
-    //     const dates = data.map(item => item.test_execution_date);
-    //     const uniqueDates = [...new Set(dates)];
-    //     uniqueDates.sort((a, b) => new Date(a) - new Date(b));
-    //     return uniqueDates;
-    // }
-
+    /**
+     * 
+     * @returns {string}
+     */
     function getUniqueSortedDates(data) {
-
-        // Use moment.js to parse the dates
-        // const dates = data.map(item => moment(item.test_execution_date, moment.ISO_8601, true).isValid() ?
-        //     moment(item.test_execution_date) :
-        //     moment(item.test_execution_date, 'DD-MM-YYYY')); // or any common format
-
-        const dates = data.map(item => formatDateToMoment(item.test_execution_date, 'DD-MM-YYYY')); // or any common format
-
-        // console.log('Original Dates:', dates);
+        const dates = data.map(item => moment(formatDateToMoment(item.test_execution_date), 'YYYY-MM-DD', true)); // or any common format
 
         // Sort the unique dates using Moment.js
         dates.sort((a, b) => a.diff(b));
 
         // Unique
-        const uniqueDates = [...new Set(dates.map(date => date.format('DD-MM-YYYY')))];
+        const uniqueDates = [...new Set(dates.map(date => date.format('YYYY-MM-DD')))];
 
-        // console.log('Unique Sorted Dates:', uniqueDates);
         return uniqueDates;
     }
 
@@ -273,7 +257,7 @@ $(document).ready(function () {
     function getCountsByOutcomeAndDate(data, outcome) {
         const counts = {};
         data.forEach(item => {
-            const date = item.test_execution_date;
+            const date = formatDateToMoment(item.test_execution_date);
             if (outcome === 'others') {
                 if (item.test_outcome !== 'passed' && item.test_outcome !== 'failed') {
                     counts[date] = (counts[date] || 0) + 1;
@@ -282,6 +266,7 @@ $(document).ready(function () {
                 counts[date] = (counts[date] || 0) + 1;
             }
         });
+        // console.log(`Outcome: ${outcome} | Count: ${JSON.stringify(counts, null, 2)}`);     
         return counts;
     }
 
@@ -323,36 +308,18 @@ $(document).ready(function () {
 
     // Function to set default date range
     function setDefaultDateRange(data) {
-        // Use moment.js to parse the dates
-        // const dates = data.map(item => moment(item.test_execution_date, moment.ISO_8601, true).isValid() ?
-        //     moment(item.test_execution_date) :
-        //     moment(item.test_execution_date, 'DD-MM-YYYY')); // or any common format
 
-        const dates = data.map(item => formatDateToMoment(item.test_execution_date, 'DD-MM-YYYY')); // or any common format
+        // Use moment.js to parse the dates
+        const dates = data.map(item => moment(formatDateToMoment(item.test_execution_date), 'YYYY-MM-DD', true)); // or any common format
 
         // Find the minimum and maximum dates using moment.js
         const minDate = moment.min(dates);
         const maxDate = moment.max(dates);
 
-        // Format the dates as YYYY-MM-DD for the input fields
+        // Format the dates as yyyy-MM-dd for the input fields
         $('#start_date').val(minDate.format('YYYY-MM-DD'));
         $('#end_date').val(maxDate.format('YYYY-MM-DD'));
     }
-
-    // // Function to filter data by date range
-    // function filterDataByDateRange(data, startDate, endDate) {
-    //     // if (!startDate && !endDate) {
-    //     //     return data;
-    //     // }
-
-    //     const start = startDate ? new Date(startDate) : new Date(Math.min(...data.map(item => new Date(item.test_execution_date))));
-    //     const end = endDate ? new Date(endDate) : new Date(Math.max(...data.map(item => new Date(item.test_execution_date))));
-
-    //     return data.filter(item => {
-    //         const date = new Date(item.test_execution_date);
-    //         return date >= start && date <= end;
-    //     });
-    // }
 
     // Function to filter data by date range
     function filterDataByDateRange(data, startDate, endDate) {
@@ -361,20 +328,22 @@ $(document).ready(function () {
         //     return data;
         // }
 
-        startDate = formatDateToMoment(startDate, 'DD-MM-YYYY');
-        endDate = formatDateToMoment(endDate, 'DD-MM-YYYY');
+        // Use moment.js to parse the dates
+        const dates = data.map(item => moment(formatDateToMoment(item.test_execution_date), 'YYYY-MM-DD', true));
+
+        // Find the minimum and maximum dates using moment.js
+        const minDate = moment.min(dates);
+        const maxDate = moment.max(dates);
 
         // Parse the start and end dates with Moment.js
-        const start = startDate ? moment(startDate, 'DD-MM-YYYY', true) : moment.min(data.map(item => moment(item.test_execution_date, 'DD-MM-YYYY', true)));
-        const end = endDate ? moment(endDate, 'DD-MM-YYYY', true) : moment.max(data.map(item => moment(item.test_execution_date, 'DD-MM-YYYY', true)));
+        const start = startDate ? moment(formatDateToMoment(startDate), 'YYYY-MM-DD', true) : minDate;
+        const end = endDate ? moment(formatDateToMoment(endDate), 'YYYY-MM-DD', true) : maxDate;
 
-        // Filter the data based on the parsed start and end dates
         return data.filter(item => {
-            const date = moment(item.test_execution_date, 'DD-MM-YYYY', true); // Parse the execution date
+            const date = moment(formatDateToMoment(item.test_execution_date), 'YYYY-MM-DD', true); // Parse the execution date
             return date.isBetween(start, end, null, '[]'); // '[]' includes start and end dates
         });
     }
-
 
     // Function to show alert for invalid data
     function showAlert(message) {
@@ -396,8 +365,78 @@ $(document).ready(function () {
         }, 5000);
     }
 
-    function formatDateToMoment(dt, frmt = 'DD-MM-YYYY') {
+    /**
+     * 
+     * @param {string} dt 
+     * @param {string} fmt 
+     * @returns {string}
+     */
+    function formatDateToMoment(dt, fmt = 'YYYY-MM-DD') {
         if (!dt) return dt;
-        return moment(dt, moment.ISO_8601, true).isValid() ? moment(dt) : moment(dt, frmt);
+
+        // If dt is already a moment object, use it directly
+        if (moment.isMoment(dt)) {
+            return dt.format(fmt);
+        }
+
+        // If dt is a Date object, convert it to moment
+        if (dt instanceof Date) {
+            return moment(dt).format(fmt);
+        }
+
+        // If dt is a number (timestamp), convert it to moment
+        if (typeof dt === 'number') {
+            return moment(dt).format(fmt);
+        }
+
+        // If dt is a string, try parsing it with different formats
+        if (typeof dt === 'string') {
+            // Trim the input string
+            dt = dt.trim();
+
+            // Try parsing with moment's built-in ISO 8601 parser first
+            let parsedDate = moment(dt, moment.ISO_8601, true);
+
+            if (parsedDate.isValid()) {
+                return parsedDate.format(fmt);
+            }
+
+            // If that fails, try other common formats
+            const formats = [
+                'YYYY-MM-DD HH:mm:ss.SSS Z',  // Format like '2024-05-05 02:55:49.547 +00:00'
+                'YYYY-MM-DDTHH:mm:ss.SSSZ',   // ISO 8601 with T separator and timezone
+                'YYYY-MM-DDTHH:mm:ssZ',       // ISO 8601 with T separator, no milliseconds
+                'YYYY-MM-DD HH:mm:ss Z',      // Format without milliseconds
+                'YYYY-MM-DD',
+                'MM/DD/YYYY',
+                'DD/MM/YYYY',
+                'MM-DD-YYYY',
+                'DD-MM-YYYY',
+                'YYYY/MM/DD',
+                'MMMM D, YYYY',
+                'D MMMM YYYY',
+                'MMM D, YYYY',
+                'D MMM YYYY',
+                'YYYY',
+                'YYYY-MM',
+                'MM-YYYY'
+            ];
+
+            parsedDate = moment(dt, formats, true);
+
+            if (parsedDate.isValid()) {
+                return parsedDate.format(fmt);
+            } else {
+                // If all else fails, try a more lenient parsing
+                parsedDate = moment(new Date(dt));
+                if (parsedDate.isValid()) {
+                    return parsedDate.format(fmt);
+                } else {
+                    return dt;
+                }
+            }
+        }
+        return dt;
     }
 });
+
