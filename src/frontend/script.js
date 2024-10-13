@@ -40,6 +40,8 @@ $(document).ready(function () {
         }
 
         const filters = getFilters();
+        // console.log(`${JSON.stringify(filters, null, 2)}`);
+
 
         $.ajax({
             url: apiUrl,
@@ -58,6 +60,11 @@ $(document).ready(function () {
                 }
 
                 const filteredData = filterDataByDateRange(data, filters.start_date, filters.end_date);
+
+                // console.log(`start: ${filters.start_date}`);
+                // console.log(`end: ${filters.end_date}`);
+                // console.log(JSON.stringify(filteredData, null, 2));
+
                 updateCharts(filteredData);
                 updateFailedTestsList(filteredData);
             },
@@ -96,10 +103,12 @@ $(document).ready(function () {
         const dates = getUniqueSortedDates(data);
         const passedCounts = getCountsByOutcomeAndDate(data, 'passed');
         const failedCounts = getCountsByOutcomeAndDate(data, 'failed');
+        const othersCounts = getCountsByOutcomeAndDate(data, 'others'); // Add counts for "others"
 
         const maxPassedCount = Math.max(...Object.values(passedCounts));
         const maxFailedCount = Math.max(...Object.values(failedCounts));
-        const maxYValue = Math.max(maxPassedCount, maxFailedCount);
+        const maxOthersCount = Math.max(...Object.values(othersCounts));
+        const maxYValue = Math.max(maxPassedCount, maxFailedCount, maxOthersCount); // Adjust maxYValue
 
         const chartData = {
             labels: dates,
@@ -116,6 +125,13 @@ $(document).ready(function () {
                     data: dates.map(date => ({ x: date, y: failedCounts[date] || 0 })),
                     backgroundColor: 'rgba(255, 0, 0, 0.6)', // Red color
                     borderColor: 'rgba(255, 0, 0, 1)',
+                    fill: false
+                },
+                {
+                    label: 'Others',
+                    data: dates.map(date => ({ x: date, y: othersCounts[date] || 0 })),
+                    backgroundColor: 'rgba(128, 128, 128, 0.6)', // Grey color for "others"
+                    borderColor: 'rgba(128, 128, 128, 1)',
                     fill: false
                 }
             ]
@@ -149,13 +165,14 @@ $(document).ready(function () {
 
         const totalPassed = Object.values(passedCounts).reduce((a, b) => a + b, 0);
         const totalFailed = Object.values(failedCounts).reduce((a, b) => a + b, 0);
+        const totalOthers = Object.values(othersCounts).reduce((a, b) => a + b, 0); // Calculate total for "others"
 
         const pieData = {
-            labels: ['Passed', 'Failed'],
+            labels: ['Passed', 'Failed', 'Others'],
             datasets: [{
-                data: [totalPassed, totalFailed],
-                backgroundColor: ['rgba(0, 128, 0, 0.6)', 'rgba(255, 0, 0, 0.6)'],
-                borderColor: ['rgba(0, 128, 0, 1)', 'rgba(255, 0, 0, 1)']
+                data: [totalPassed, totalFailed, totalOthers], // Include "others" in pie chart data
+                backgroundColor: ['rgba(0, 128, 0, 0.6)', 'rgba(255, 0, 0, 0.6)', 'rgba(128, 128, 128, 0.6)'],
+                borderColor: ['rgba(0, 128, 0, 1)', 'rgba(255, 0, 0, 1)', 'rgba(128, 128, 128, 1)']
             }]
         };
 
@@ -165,7 +182,6 @@ $(document).ready(function () {
             options: {
                 responsive: true,
                 plugins: {
-                    // Plugin to display data labels on the chart
                     datalabels: {
                         color: '#fff',
                         formatter: function (value, context) {
@@ -224,19 +240,45 @@ $(document).ready(function () {
     }
 
     // Function to get unique sorted dates from data
+    // function getUniqueSortedDates(data) {
+    //     const dates = data.map(item => item.test_execution_date);
+    //     const uniqueDates = [...new Set(dates)];
+    //     uniqueDates.sort((a, b) => new Date(a) - new Date(b));
+    //     return uniqueDates;
+    // }
+
     function getUniqueSortedDates(data) {
-        const dates = data.map(item => item.test_execution_date);
-        const uniqueDates = [...new Set(dates)];
-        uniqueDates.sort((a, b) => new Date(a) - new Date(b));
+
+        // Use moment.js to parse the dates
+        // const dates = data.map(item => moment(item.test_execution_date, moment.ISO_8601, true).isValid() ?
+        //     moment(item.test_execution_date) :
+        //     moment(item.test_execution_date, 'DD-MM-YYYY')); // or any common format
+
+        const dates = data.map(item => formatDateToMoment(item.test_execution_date, 'DD-MM-YYYY')); // or any common format
+
+        // console.log('Original Dates:', dates);
+
+        // Sort the unique dates using Moment.js
+        dates.sort((a, b) => a.diff(b));
+
+        // Unique
+        const uniqueDates = [...new Set(dates.map(date => date.format('DD-MM-YYYY')))];
+
+        // console.log('Unique Sorted Dates:', uniqueDates);
         return uniqueDates;
     }
+
 
     // Function to get counts by outcome and date from data
     function getCountsByOutcomeAndDate(data, outcome) {
         const counts = {};
         data.forEach(item => {
             const date = item.test_execution_date;
-            if (item.test_outcome === outcome) {
+            if (outcome === 'others') {
+                if (item.test_outcome !== 'passed' && item.test_outcome !== 'failed') {
+                    counts[date] = (counts[date] || 0) + 1;
+                }
+            } else if (item.test_outcome === outcome) {
                 counts[date] = (counts[date] || 0) + 1;
             }
         });
@@ -281,30 +323,58 @@ $(document).ready(function () {
 
     // Function to set default date range
     function setDefaultDateRange(data) {
-        const dates = data.map(item => item.test_execution_date);
-        const minDate = new Date(Math.min(...dates.map(date => new Date(date))));
-        const maxDate = new Date(Math.max(...dates.map(date => new Date(date))));
+        // Use moment.js to parse the dates
+        // const dates = data.map(item => moment(item.test_execution_date, moment.ISO_8601, true).isValid() ?
+        //     moment(item.test_execution_date) :
+        //     moment(item.test_execution_date, 'DD-MM-YYYY')); // or any common format
 
-        const formatDate = date => date.toISOString().split('T')[0];
+        const dates = data.map(item => formatDateToMoment(item.test_execution_date, 'DD-MM-YYYY')); // or any common format
 
-        $('#start_date').val(formatDate(minDate));
-        $('#end_date').val(formatDate(maxDate));
+        // Find the minimum and maximum dates using moment.js
+        const minDate = moment.min(dates);
+        const maxDate = moment.max(dates);
+
+        // Format the dates as YYYY-MM-DD for the input fields
+        $('#start_date').val(minDate.format('YYYY-MM-DD'));
+        $('#end_date').val(maxDate.format('YYYY-MM-DD'));
     }
+
+    // // Function to filter data by date range
+    // function filterDataByDateRange(data, startDate, endDate) {
+    //     // if (!startDate && !endDate) {
+    //     //     return data;
+    //     // }
+
+    //     const start = startDate ? new Date(startDate) : new Date(Math.min(...data.map(item => new Date(item.test_execution_date))));
+    //     const end = endDate ? new Date(endDate) : new Date(Math.max(...data.map(item => new Date(item.test_execution_date))));
+
+    //     return data.filter(item => {
+    //         const date = new Date(item.test_execution_date);
+    //         return date >= start && date <= end;
+    //     });
+    // }
 
     // Function to filter data by date range
     function filterDataByDateRange(data, startDate, endDate) {
-        if (!startDate && !endDate) {
-            return data;
-        }
+        // If no start and end dates are provided, return the original data
+        // if (!startDate && !endDate) {
+        //     return data;
+        // }
 
-        const start = startDate ? new Date(startDate) : new Date(Math.min(...data.map(item => new Date(item.test_execution_date))));
-        const end = endDate ? new Date(endDate) : new Date(Math.max(...data.map(item => new Date(item.test_execution_date))));
+        startDate = formatDateToMoment(startDate, 'DD-MM-YYYY');
+        endDate = formatDateToMoment(endDate, 'DD-MM-YYYY');
 
+        // Parse the start and end dates with Moment.js
+        const start = startDate ? moment(startDate, 'DD-MM-YYYY', true) : moment.min(data.map(item => moment(item.test_execution_date, 'DD-MM-YYYY', true)));
+        const end = endDate ? moment(endDate, 'DD-MM-YYYY', true) : moment.max(data.map(item => moment(item.test_execution_date, 'DD-MM-YYYY', true)));
+
+        // Filter the data based on the parsed start and end dates
         return data.filter(item => {
-            const date = new Date(item.test_execution_date);
-            return date >= start && date <= end;
+            const date = moment(item.test_execution_date, 'DD-MM-YYYY', true); // Parse the execution date
+            return date.isBetween(start, end, null, '[]'); // '[]' includes start and end dates
         });
     }
+
 
     // Function to show alert for invalid data
     function showAlert(message) {
@@ -324,5 +394,10 @@ $(document).ready(function () {
         setTimeout(() => {
             $('.custom-alert').alert('close');
         }, 5000);
+    }
+
+    function formatDateToMoment(dt, frmt = 'DD-MM-YYYY') {
+        if (!dt) return dt;
+        return moment(dt, moment.ISO_8601, true).isValid() ? moment(dt) : moment(dt, frmt);
     }
 });
