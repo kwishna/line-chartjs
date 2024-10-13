@@ -1,6 +1,6 @@
 {
   "name": "@kwishna/linechartjs",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "An Express and jQuery-based dashboard for test results",
   "main": "index.js",
   "bin": {
