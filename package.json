@@ -1,6 +1,6 @@
 {
   "name": "@kwishna/linechartjs",
-  "version": "1.0.3",
+  "version": "1.0.5",
   "description": "An Express and jQuery-based dashboard for test results",
   "main": "index.js",
   "bin": {
@@ -15,7 +15,8 @@
     "dashboard",
     "jquery",
     "sqlite3",
-    "sequelize"
+    "sequelize",
+    "chartjs"
   ],
   "publishConfig": {
     "registry": "https://registry.npmjs.org/",
