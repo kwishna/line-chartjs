@@ -1,4 +1,4 @@
-const {resolve, join} = require('path')
+const { resolve, join } = require('path')
 const express = require('express');
 const cors = require('cors');
 
@@ -6,10 +6,6 @@ const PORT = process.env.EXPRESS_PORT || 3001;
 const DATA_FOLDER = process.env.DATA_FOLDER ?? './dbFolder';
 
 const readDatabaseFiles = require('./dataConsolidation');
-// const {syncDatabase} = require('./testResultModelDef');
-// syncDatabase()
-//     .then()
-//     .catch(err => console.error(err));
 
 const createServer = () => {
     const app = express();
@@ -27,30 +23,10 @@ const createServer = () => {
         res.json({ port: PORT });
     });
 
-    // All data from DB files.
-    // app.get('/api/data', async (req, res) => {
-    //     const data = await readDatabaseFiles(resolve(DATA_FOLDER));
-    //     res.json(data);
-    // });
-
-    // app.get('/api/data/id/:test_case_id', async (req, res) => {
-    //     const testCaseId = req.params.test_case_id;
-    //     const data = await readDatabaseFiles(DATA_FOLDER);
-    //     console.log(data)
-    //     const filteredData = data.filter(item => item.test_case_id === testCaseId);
-    //     res.json(filteredData);
-    // });
-
-    // app.get('/api/data/tags/:test_tags', async (req, res) => {
-    //     const testTags = req.params.test_tags;
-    //     const data = await readDatabaseFiles(DATA_FOLDER);
-    //     const filteredData = data.filter(item => item.testTags === testTags);
-    //     res.json(filteredData);
-    // });
-
     app.post('/api/data/filter', async (req, res) => {
         const allowedKeys = [
             'test_name',
+            'test_tags',
             'test_outcome',
             'test_execution_date',
             'test_environment',
@@ -70,11 +46,32 @@ const createServer = () => {
         }
 
         // Read all data from DB
+        /**
+         *  [
+         *      {
+         *          "test_name": "alpha",
+         *          "test_tags": "@smoke,@regression,@aat,@supply_chain",
+         *          "test_category": "@finance",
+         *      },
+         *      {
+         *          "test_name": "beta",
+         *          "test_tags": "@smoke,@regression,@ad_systen,@som",
+         *          "test_category": "@som",
+         *      }
+         *  ]
+         */
         const data = await readDatabaseFiles(resolve(DATA_FOLDER));
 
         // Filter the data
         const filteredData = data.filter(item => {
             return Object.keys(filters).every(key => {
+                if (key === 'test_tags') {
+                    const allTags = item[key].split(",").map(tag => tag?.trim()?.toLowerCase());
+                    return allTags?.includes(filters[key]?.trim()?.toLowerCase());
+                }
+                else if (key === 'error_message') {
+                    return item[key]?.toLowerCase().includes(filters[key]?.toLowerCase());
+                }
                 return item[key] === filters[key];
             });
         });
@@ -84,7 +81,7 @@ const createServer = () => {
 
     // Fallback
     app.use((req, res, next) => {
-        res.status(404).json({error: 'API endpoint/request is not supported.'});
+        res.status(404).json({ error: 'API endpoint/request is not supported.' });
     });
 
     app.listen(PORT, () => {
