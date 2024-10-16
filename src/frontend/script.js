@@ -75,6 +75,7 @@ $(document).ready(function () {
             start_date: $('#start_date').val(),
             end_date: $('#end_date').val(),
             test_name: $('#test_name').val(),
+            test_tags: $('#test_tags').val(),
             test_outcome: $('#test_outcome').val(),
             test_execution_date: $('#test_execution_date').val(),
             test_environment: $('#test_environment').val(),
