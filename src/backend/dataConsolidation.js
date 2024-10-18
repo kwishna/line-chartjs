@@ -1,10 +1,12 @@
 const fs = require('fs');
 const path = require('path');
-const {Sequelize} = require('sequelize');
+const { Sequelize } = require('sequelize');
 const dbSchema = require('./dbSchema');
 
 // Collect data from all DB files
 const readDatabaseFiles = async (folderPath) => {
+
+    folderPath = path.resolve(folderPath);
 
     if (!fs.existsSync(folderPath)) { // If folder doesn't exist.
         fs.mkdirSync(folderPath); // Create input folder.
@@ -29,8 +31,14 @@ const readDatabaseFiles = async (folderPath) => {
             logging: false
         });
 
+        const schemaName = process.env.TEST_RESULTS_TABLE_NAME || path.parse(dbPath).name;
+
         // DB model.
-        const tempDbModel = tempSequelize.define('TestResult', dbSchema);
+        const tempDbModel = tempSequelize.define(schemaName, dbSchema, {
+            timestamps: false,
+            createdAt: false,
+            updatedAt: false
+        });
 
         // Read data from DB.
         let rows = [];
