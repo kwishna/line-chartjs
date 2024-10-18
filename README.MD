@@ -20,6 +20,8 @@
 
 - [Node.js](https://nodejs.org/)
 - [npm](https://www.npmjs.com/get-npm)
+- Make sure to mention `TEST_RESULTS_TABLE_NAME` environment variable.
+- 
 
 ## Installation
 
@@ -45,6 +47,7 @@ Ensure your data files are .db, .sqlite3 and schema follow a consistent structur
 {
    "test_name": "Test 1",
    "test_outcome": "passed",
+   "test_tags": "@smoke,@ui",
    "test_execution_date": "2023-01-01",
    "test_environment": "dev",
    "error_message": "",
@@ -55,6 +58,7 @@ Ensure your data files are .db, .sqlite3 and schema follow a consistent structur
 {
    "test_name": "Test 2",
    "test_outcome": "failed",
+   "test_tags": "@regression,@api",
    "test_execution_date": "2023-10-10",
    "test_environment": "qa",
    "error_message": "Assertion error",
