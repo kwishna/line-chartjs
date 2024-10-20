@@ -4,7 +4,6 @@ const {expressMiddleware} = require('@apollo/server/express4');
 const cors = require('cors');
 const bodyParser = require('body-parser');
 const path = require('path');
-// const open = require('open');
 
 const readDatabaseFiles = require('./dataConsolidation');
 const {syncDatabase} = require('./models/testResultModelDef.js');
@@ -56,9 +55,6 @@ const startServer = async () => {
 
     app.listen(port, () => {
         console.log(`Server running at http://localhost:${port}/graphql`);
-
-        // Open the default browser and navigate to the frontend
-        // open(`http://localhost:${port}`);
     });
 };
 
