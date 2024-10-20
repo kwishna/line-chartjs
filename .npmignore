@@ -3,7 +3,8 @@ node_modules
 *.env
 .git
 .gitignore
-LICENSE
+*LICENSE*
 graphql-backend
 dbFolder
 .npmrc
+*rough*
